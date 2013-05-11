@@ -3,5 +3,7 @@ This repository contains an implementation of the SLIC Superpixel algorithm by A
 
 ## Exemplary result
 The images below shows an example of an over-segmentation using 400 superpixels and a weight factor of 40.
-![Dog](PSMM.github.con/SLIC-Superpixels/dog.png)
-![Dog Segmentation](PSMM.github.con/SLIC-Superpixels/dog_segmentation.png)
+<p align="center">
+  <img src="https://github.com/PSMM/SLIC-Superpixels/blob/master/dog.png?raw=true" alt="Dog"/>
+  <img src="https://github.com/PSMM/SLIC-Superpixels/blob/master/dog_segmentation.png?raw=true" alt="Dog Segmentation"/>
+</p>
