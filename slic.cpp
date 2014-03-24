@@ -274,6 +274,7 @@ void Slic::create_connectivity(IplImage *image) {
             }
         }
     }
+    clusters = new_clusters;
 }
 
 /*
