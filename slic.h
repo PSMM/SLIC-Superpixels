@@ -70,7 +70,7 @@ class Slic {
         void create_connectivity(const cv::Mat &image);
         
         /* Draw functions. Resp. displayal of the centers and the contours. */
-        void display_center_grid(cv::Mat &image, cv::Vec3b colour);
+        void display_center_grid(cv::Mat &image, cv::Scalar colour);
         void display_contours(cv::Mat &image, cv::Vec3b colour);
         void colour_with_cluster_means(cv::Mat &image);
 };

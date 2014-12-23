@@ -256,7 +256,7 @@ void Slic::create_connectivity(const cv::Mat &image) {
  * Input : The image to display upon (cv::Mat) and the colour (cv::Vec3b).
  * Output: -
  */
-void Slic::display_center_grid(cv::Mat &image, cv::Vec3b colour) {
+void Slic::display_center_grid(cv::Mat &image, cv::Scalar colour) {
     for (int i = 0; i < centers.rows; i++) {
         cv::circle(image, cv::Point2d(centers(i)[3], centers(i)[4]), 2, colour, 2);
     }
