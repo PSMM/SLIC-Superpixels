@@ -1,7 +1,6 @@
 #include "slic.h"
 
 
-
 /*
  * Constructor. Nothing is done here.
  */
@@ -26,7 +25,6 @@ void Slic::clear_data() {
     clusters.release();
     distances.release();
     centers.release();
-    //centers.clear();
     center_counts.clear();
 }
 
@@ -40,18 +38,18 @@ void Slic::clear_data() {
 void Slic::init_data(const cv::Mat &image) {
     /* Initialize the cluster and distance matrices. */
 
-    clusters = Mat_<int>(image.cols,image.rows,-1);
-    distances = Mat_<double>(image.cols,image.rows,FLT_MAX);
+    clusters  = cv::Mat_<int>(image.cols,image.rows,-1);
+    distances = cv::Mat_<double>(image.cols,image.rows,DBL_MAX);
 
     /* Initialize the centers and counters. */
     for (int i = step; i < image.cols - step/2; i += step) {
         for (int j = step; j < image.rows - step/2; j += step) {
             /* Find the local minimum (gradient-wise). */
             cv::Point nc = find_local_minimum(image, cv::Point(i,j));
-            cv::Scalar colour = image.at<Vec3b>(nc.y, nc.x);
+            cv::Vec3b colour = image.at<cv::Vec3b>(nc.y, nc.x);
             
             /* Generate the center vector. */
-            Vec5d center(colour.val[0],colour.val[1],colour.val[2],nc.x,nc.y);
+            Vec5d center(colour[0], colour[1], colour[2], nc.x, nc.y);
             
             /* Append to vector of centers. */
             centers.push_back(center);
@@ -67,10 +65,10 @@ void Slic::init_data(const cv::Mat &image) {
  *         the pixel (cv::Scalar).
  * Output: The distance (double).
  */
-double Slic::compute_dist(int ci, cv::Point pixel, cv::Scalar colour) {
+double Slic::compute_dist(int ci, cv::Point pixel, cv::Vec3b colour) {
     Vec5d cen(centers(ci));
-    double dc = sqrt(pow(cen[0] - colour.val[0], 2) + pow(cen[1]
-            - colour.val[1], 2) + pow(cen[2] - colour.val[2], 2));
+    double dc = sqrt(pow(cen[0] - colour[0], 2) + pow(cen[1]
+            - colour[1], 2) + pow(cen[2] - colour[2], 2));
     double ds = sqrt(pow(cen[3] - pixel.x, 2) + pow(cen[4] - pixel.y, 2));
     
     return sqrt(pow(dc / nc, 2) + pow(ds / ns, 2));
@@ -86,19 +84,19 @@ double Slic::compute_dist(int ci, cv::Point pixel, cv::Scalar colour) {
  * Input : The image (cv::Mat &) and the pixel center (cv::Point).
  * Output: The local gradient minimum (cv::Point).
  */
-cv::Point Slic::find_local_minimum(const cv::Mat_<Vec3b> &image, cv::Point center) {
-    double min_grad = FLT_MAX;
-    cv::Point loc_min = cv::Point(center.x, center.y);
+cv::Point Slic::find_local_minimum(const cv::Mat_<cv::Vec3b> &image, cv::Point center) {
+    double min_grad = DBL_MAX;
+    cv::Point loc_min(center.x, center.y);
     
     for (int i = center.x-1; i < center.x+2; i++) {
         for (int j = center.y-1; j < center.y+2; j++) {
-            cv::Scalar c1 = image(j+1, i);
-            cv::Scalar c2 = image(j, i+1);
-            cv::Scalar c3 = image(j, i);
+            cv::Vec3b c1 = image(j+1, i);
+            cv::Vec3b c2 = image(j, i+1);
+            cv::Vec3b c3 = image(j, i);
             /* Convert colour values to grayscale values. */
-            double i1 = c1.val[0];
-            double i2 = c2.val[0];
-            double i3 = c3.val[0];
+            double i1 = c1[0];
+            double i2 = c2[0];
+            double i3 = c3[0];
             /*double i1 = c1.val[0] * 0.11 + c1.val[1] * 0.59 + c1.val[2] * 0.3;
             double i2 = c2.val[0] * 0.11 + c2.val[1] * 0.59 + c2.val[2] * 0.3;
             double i3 = c3.val[0] * 0.11 + c3.val[1] * 0.59 + c3.val[2] * 0.3;*/
@@ -128,7 +126,8 @@ void Slic::generate_superpixels(const cv::Mat &img, int step, int nc) {
     this->nc = nc;
     this->ns = step;
 
-    Mat_<Vec3b> image(img);
+    /* make a new Mat header, that allows us to iterate the image more efficiently. */
+    cv::Mat_<cv::Vec3b> image(img);
 
     /* Clear previous data (if any), and re-initialize it. */
     clear_data();
@@ -140,13 +139,13 @@ void Slic::generate_superpixels(const cv::Mat &img, int step, int nc) {
         distances = FLT_MAX;
 
         for (int j = 0; j < centers.rows; j++) {
-            /* Only compare to pixels in a 2 x step by 2 x step region. */
             Vec5d cen(centers(j));
+            /* Only compare to pixels in a 2 x step by 2 x step region. */
             for (int k = int(cen[3]) - step; k < int(cen[3]) + step; k++) {
                 for (int l = int(cen[4]) - step; l < int(cen[4]) + step; l++) {
                 
                     if (k >= 0 && k < image.cols && l >= 0 && l < image.rows) {
-                        cv::Scalar colour = image(l, k);
+                        cv::Vec3b colour = image(l, k);
                         double d = compute_dist(j, cv::Point(k,l), colour);
                         
                         /* Update cluster allocation if the cluster minimizes the
@@ -172,8 +171,8 @@ void Slic::generate_superpixels(const cv::Mat &img, int step, int nc) {
                 int c_id = clusters(j,k);
                 
                 if (c_id != -1) {
-                    cv::Scalar colour = image(k, j);                    
-                    centers(c_id) += Vec5d(colour.val[0], colour.val[1], colour.val[2], j, k);                    
+                    cv::Vec3b colour = image(k, j);                    
+                    centers(c_id) += Vec5d(colour[0], colour[1], colour[2], j, k);                    
                     center_counts[c_id] += 1;
                 }
             }
@@ -202,7 +201,7 @@ void Slic::create_connectivity(const cv::Mat &image) {
 	const int dy4[4] = { 0, -1,  0,  1};
     
     /* Initialize the new cluster matrix. */
-    Mat_<int> new_clusters(image.cols,image.rows,-1);
+    cv::Mat_<int> new_clusters(image.cols,image.rows,-1);
 
     for (int i = 0; i < image.cols; i++) {
         for (int j = 0; j < image.rows; j++) {
@@ -254,7 +253,7 @@ void Slic::create_connectivity(const cv::Mat &image) {
 /*
  * Display the cluster centers.
  *
- * Input : The image to display upon (IplImage*) and the colour (cv::Scalar).
+ * Input : The image to display upon (cv::Mat) and the colour (cv::Vec3b).
  * Output: -
  */
 void Slic::display_center_grid(cv::Mat &image, cv::Vec3b colour) {
@@ -266,7 +265,7 @@ void Slic::display_center_grid(cv::Mat &image, cv::Vec3b colour) {
 /*
  * Display a single pixel wide contour around the clusters.
  *
- * Input : The target image (cv::Mat) and contour colour (cv::Scalar).
+ * Input : The target image (cv::Mat) and contour colour (cv::Vec3b).
  * Output: -
  */
 void Slic::display_contours(cv::Mat &image, cv::Vec3b colour) {
@@ -276,7 +275,7 @@ void Slic::display_contours(cv::Mat &image, cv::Vec3b colour) {
 	/* Initialize the contour vector and the matrix detailing whether a pixel
 	 * is already taken to be a contour. */
 	vector<cv::Point> contours;
-	Mat_<uchar> istaken(image.cols, image.rows, uchar(0));
+    cv::Mat_<uchar> istaken(image.cols, image.rows, uchar(0));
     
     /* Go through all the pixels. */
     for (int i = 0; i < image.cols; i++) {
@@ -304,7 +303,7 @@ void Slic::display_contours(cv::Mat &image, cv::Vec3b colour) {
     
     /* Draw the contour pixels. */
     for (int i = 0; i < (int)contours.size(); i++) {
-        image.at<Vec3b>(contours[i].y, contours[i].x) = colour;
+        image.at<cv::Vec3b>(contours[i].y, contours[i].x) = colour;
     }
 }
 
@@ -322,7 +321,7 @@ void Slic::colour_with_cluster_means(cv::Mat &image) {
     for (int i = 0; i < image.cols; i++) {
         for (int j = 0; j < image.rows; j++) {
             int index = clusters(i,j);
-            colours[index] += image.at<Vec3b>(j, i);
+            colours[index] += image.at<cv::Vec3b>(j, i);
         }
     }
     
@@ -334,7 +333,7 @@ void Slic::colour_with_cluster_means(cv::Mat &image) {
     /* Fill in. */
     for (int i = 0; i < image.cols; i++) {
         for (int j = 0; j < image.rows; j++) {
-            image.at<Vec3b>(j, i) = colours[clusters(i,j)];;
+            image.at<cv::Vec3b>(j, i) = colours[clusters(i,j)];;
         }
     }
 }

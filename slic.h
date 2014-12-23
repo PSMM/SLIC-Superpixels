@@ -20,12 +20,12 @@
 using namespace std;
 
 #include <opencv2/opencv.hpp>
-using namespace cv;
+//using namespace cv;
 
 /* The number of iterations run by the clustering algorithm. */
 #define NR_ITERATIONS 10
 
-typedef Vec<double, 5> Vec5d;
+typedef cv::Vec<double, 5> Vec5d;
 
 
 /*
@@ -38,8 +38,8 @@ typedef Vec<double, 5> Vec5d;
 class Slic {
     private:
         /* The cluster assignments and distance values for each pixel. */
-        Mat_<int> clusters;
-        Mat_<double> distances;
+        cv::Mat_<int> clusters;
+        cv::Mat_<double> distances;
         
         /* The LAB and xy values of the centers. */
         cv::Mat_<Vec5d> centers;
@@ -51,9 +51,9 @@ class Slic {
         int step, nc, ns;
         
         /* Compute the distance between a center and an individual pixel. */
-        double compute_dist(int ci, cv::Point pixel, cv::Scalar colour);
+        double compute_dist(int ci, cv::Point pixel, cv::Vec3b colour);
         /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-        cv::Point find_local_minimum(const cv::Mat_<Vec3b> &image, cv::Point center);
+        cv::Point find_local_minimum(const cv::Mat_<cv::Vec3b> &image, cv::Point center);
         
         /* Remove and initialize the 2d vectors. */
         void clear_data();
