@@ -248,6 +248,7 @@ void Slic::create_connectivity(const cv::Mat &image) {
             }
         }
     }
+    clusters = new_clusters;
 }
 
 /*
