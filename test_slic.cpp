@@ -17,6 +17,7 @@ using namespace std;
 #include "slic.h"
 using namespace cv;
 
+
 int main(int argc, char *argv[]) {
     /* Load the image and convert to Lab colour space. */
     Mat image = imread("dog.png", 1);
@@ -29,14 +30,14 @@ int main(int argc, char *argv[]) {
     int nc = 40;
 
     double step = sqrt((w * h) / (double) nr_superpixels);
-    
+
     /* Perform the SLIC superpixel algorithm. */
     Slic slic;
-    slic.generate_superpixels(lab_image, step, nc);
+    slic.generate_superpixels(lab_image, int(step), nc);
     slic.create_connectivity(lab_image);
+    slic.display_contours(image, Vec3b(0,0,255));
     
     /* Display the contours and show the result. */
-    slic.display_contours(image, Vec3b(0,0,255));
     imshow("result", image);
     waitKey(0);
 }
