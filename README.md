@@ -1,4 +1,5 @@
-# SLIC Superpixel Implementation
+# SLIC Superpixel Implementation, originally from : https://github.com/PSMM/SLIC-Superpixels
+
 This repository contains an implementation of the SLIC Superpixel algorithm by Achanta et al. (PAMI'12, vol. 34, num. 11, pp. 2274-2282). The C++ implementation is created to work with the strutures of OpenCV.
 
 ## Exemplary result
