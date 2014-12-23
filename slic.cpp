@@ -53,7 +53,7 @@ void Slic::init_data(const cv::Mat &image) {
             vector<double> center;
             /* Find the local minimum (gradient-wise). */
             cv::Point nc = find_local_minimum(image, cv::Point(i,j));
-            cv::Vec3b colour = image.at<Vec3b>(nc.y, nc.x);
+            cv::Vec3b colour = image.at<cv::Vec3b>(nc.y, nc.x);
             
             /* Generate the center vector. */
             center.push_back(colour.val[0]);
@@ -136,7 +136,7 @@ void Slic::generate_superpixels(const cv::Mat &img, int step, int nc) {
     this->ns = step;
     
     /* make a new Mat header, that allows us to iterate the image more efficiently. */
-    Mat_<Vec3b> image(img);
+    cv::Mat_<cv::Vec3b> image(img);
 
     /* Clear previous data (if any), and re-initialize it. */
     clear_data();
@@ -336,7 +336,7 @@ void Slic::display_contours(cv::Mat &image, cv::Vec3b colour) {
     
     /* Draw the contour pixels. */
     for (int i = 0; i < (int)contours.size(); i++) {
-        image.at<Vec3b>(contours[i].y, contours[i].x) = colour;
+        image.at<cv::Vec3b>(contours[i].y, contours[i].x) = colour;
     }
 }
 
@@ -354,7 +354,7 @@ void Slic::colour_with_cluster_means(cv::Mat &image) {
     for (int i = 0; i < image.cols; i++) {
         for (int j = 0; j < image.rows; j++) {
             int index = clusters[i][j];
-            colours[index] += image.at<Vec3b>(j, i);
+            colours[index] += image.at<cv::Vec3b>(j, i);
         }
     }
     
@@ -366,7 +366,7 @@ void Slic::colour_with_cluster_means(cv::Mat &image) {
     /* Fill in. */
     for (int i = 0; i < image.cols; i++) {
         for (int j = 0; j < image.rows; j++) {
-            image.at<Vec3b>(j, i) = colours[clusters[i][j]];;
+            image.at<cv::Vec3b>(j, i) = colours[clusters[i][j]];;
         }
     }
 }

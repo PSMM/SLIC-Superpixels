@@ -20,7 +20,7 @@
 using namespace std;
 
 #include <opencv2/opencv.hpp>
-using namespace cv;
+//using namespace cv;
 
 /* 2d matrices are handled by 2d vectors. */
 #define vec2dd vector<vector<double> >
@@ -54,7 +54,7 @@ class Slic {
         /* Compute the distance between a center and an individual pixel. */
         double compute_dist(int ci, cv::Point pixel, cv::Vec3b colour);
         /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-        cv::Point find_local_minimum(const cv::Mat_<Vec3b> &image, cv::Point center);
+        cv::Point find_local_minimum(const cv::Mat_<cv::Vec3b> &image, cv::Point center);
         
         /* Remove and initialize the 2d vectors. */
         void clear_data();
