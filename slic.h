@@ -37,14 +37,6 @@ typedef cv::Vec<double, 5> Vec5d;
  */
 class Slic {
     private:
-        /* The cluster assignments and distance values for each pixel. */
-        cv::Mat_<int> clusters;
-        cv::Mat_<double> distances;
-        
-        /* The LAB and xy values of the centers. */
-        cv::Mat_<Vec5d> centers;
-        /* The number of occurences of each center. */
-        vector<int> center_counts;
         
         /* The step size per cluster, and the colour (nc) and distance (ns)
          * parameters. */
@@ -73,6 +65,14 @@ class Slic {
         void display_center_grid(cv::Mat &image, cv::Scalar colour);
         void display_contours(cv::Mat &image, cv::Vec3b colour);
         void colour_with_cluster_means(cv::Mat &image);
+        /* The cluster assignments and distance values for each pixel. */
+        cv::Mat_<int> clusters;
+        cv::Mat_<double> distances;
+        
+        /* The LAB and xy values of the centers. */
+        cv::Mat_<Vec5d> centers;
+        /* The number of occurences of each center. */
+        vector<int> center_counts;
 };
 
 #endif
