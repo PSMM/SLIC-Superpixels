@@ -316,13 +316,19 @@ void Slic::display_contours(cv::Mat &image, cv::Vec3b colour) {
  * Output: -
  */
 void Slic::colour_with_cluster_means(cv::Mat &image) {
-    vector<cv::Vec3b> colours(centers.rows);
-    
+    vector<cv::Vec3i> colours(centers.rows);
+    /* fill */
+    for (size_t i = 0; i < colours.size(); i++) {
+      colours[i] = cv::Vec3i(0, 0, 0);
+    }
     /* Gather the colour values per cluster. */
     for (int i = 0; i < image.cols; i++) {
         for (int j = 0; j < image.rows; j++) {
             int index = clusters(i,j);
-            colours[index] += image.at<cv::Vec3b>(j, i);
+            cv::Vec3b c = image.at<cv::Vec3b>(j, i);
+            colours[index][0] += (c[0]);
+            colours[index][1] += (c[1]);
+            colours[index][2] += (c[2]);
         }
     }
     
@@ -334,7 +340,8 @@ void Slic::colour_with_cluster_means(cv::Mat &image) {
     /* Fill in. */
     for (int i = 0; i < image.cols; i++) {
         for (int j = 0; j < image.rows; j++) {
-            image.at<cv::Vec3b>(j, i) = colours[clusters(i,j)];;
+            cv::Vec3i c = colours[clusters(i,j)];
+            image.at<cv::Vec3b>(j, i) = cv::Vec3b(c[0], c[1], c[2]);
         }
     }
 }
