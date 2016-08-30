@@ -7,26 +7,26 @@
  * superpixel algorithm, as implemented in slic.h and slic.cpp.
  */
  
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
 #include <stdio.h>
 #include <math.h>
 #include <vector>
 #include <float.h>
 using namespace std;
 
+#include <opencv2/opencv.hpp>
 #include "slic.h"
+using namespace cv;
 
 int main(int argc, char *argv[]) {
     /* Load the image and convert to Lab colour space. */
-    IplImage *image = cvLoadImage(argv[1], 1);
-    IplImage *lab_image = cvCloneImage(image);
-    cvCvtColor(image, lab_image, CV_BGR2Lab);
+    Mat image = imread("dog.png", 1);
+    Mat lab_image;
+    cvtColor(image, lab_image, COLOR_BGR2Lab);
     
     /* Yield the number of superpixels and weight-factors from the user. */
-    int w = image->width, h = image->height;
-    int nr_superpixels = atoi(argv[2]);
-    int nc = atoi(argv[3]);
+    int w = image.cols, h = image.rows;
+    int nr_superpixels = 400;
+    int nc = 40;
 
     double step = sqrt((w * h) / (double) nr_superpixels);
     
@@ -36,8 +36,7 @@ int main(int argc, char *argv[]) {
     slic.create_connectivity(lab_image);
     
     /* Display the contours and show the result. */
-    slic.display_contours(image, CV_RGB(255,0,0));
-    cvShowImage("result", image);
-    cvWaitKey(0);
-    cvSaveImage(argv[4], image);
+    slic.display_contours(image, Vec3b(0,0,255));
+    imshow("result", image);
+    waitKey(0);
 }
