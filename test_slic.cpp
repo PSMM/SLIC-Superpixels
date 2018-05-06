@@ -15,7 +15,7 @@
 #include <float.h>
 using namespace std;
 
-#include "slic.h"
+#include "slic.cpp"
 
 int main(int argc, char *argv[]) {
     /* Load the image and convert to Lab colour space. */
